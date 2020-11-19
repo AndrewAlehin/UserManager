@@ -1,5 +1,6 @@
 package ru.testwork.UserManager.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,5 +18,6 @@ public interface CrudUserRepository extends JpaRepository<User, Integer> {
   @Query("DELETE FROM User u WHERE u.login=:login")
   int delete(@Param("login") String login);
 
+  @EntityGraph(attributePaths = {"roles"})
   User getByLogin(String login);
 }

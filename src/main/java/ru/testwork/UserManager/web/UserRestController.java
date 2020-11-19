@@ -21,7 +21,7 @@ import ru.testwork.UserManager.repository.UserRepository;
 @RequestMapping(value = UserRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserRestController {
 
-  static final String REST_URL = "/rest/user";
+  public static final String REST_URL = "/rest/user";
 
   private final UserRepository repository;
 
@@ -29,7 +29,7 @@ public class UserRestController {
     this.repository = repository;
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/{login}")
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
   public void delete(@PathVariable String login) {
     checkNotFoundWithId(repository.delete(login), login);
@@ -40,10 +40,15 @@ public class UserRestController {
     return repository.getAll();
   }
 
-  @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping("/{login}")
+  public User get(@PathVariable String login) {
+    return checkExistLogin(login);
+  }
+
+  @PutMapping(value = "/{login}", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(value = HttpStatus.OK)
   public JSONObject update(@RequestBody @Valid User user, @PathVariable String login) {
-    checkLogin(login);
+    checkLogin(user.getLogin(), login);
     repository.update(user, login);
     return null;
   }
@@ -62,10 +67,22 @@ public class UserRestController {
     }
   }
 
-  private void checkLogin(String login) {
-    if (repository.get(login) == null) {
+  private void checkLogin(String loginNew, String login) {
+    User user = repository.get(login); //test exception null?
+    if (user == null) {
       throw new NotFoundException("login = " + login);
     }
+    if (!user.getLogin().equals(loginNew) && repository.get(loginNew) != null) {
+      throw new DoubleException("Already exists with this login");
+    }
+  }
+
+  private User checkExistLogin(String login) {
+    User user = repository.get(login);
+    if (user == null) {
+      throw new NotFoundException("login = " + login);
+    }
+    return user;
   }
 
   private void checkNotFoundWithId(boolean found, String login) {
