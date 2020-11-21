@@ -1,6 +1,8 @@
 package ru.testwork.UserManager.model;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -11,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import ru.testwork.UserManager.View;
 
 @Entity
 @Table(name = "roles")
@@ -26,6 +29,7 @@ public class Role {
   private Set<User> users;
 
   @Column(name = "role")
+  @JsonView(View.Get.class)
   private String name;
 
   public Role(String name) {
@@ -45,6 +49,24 @@ public class Role {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Role)) {
+      return false;
+    }
+    Role role = (Role) o;
+    return Objects.equals(id, role.id) &&
+        Objects.equals(name, role.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, name);
   }
 
   @Override

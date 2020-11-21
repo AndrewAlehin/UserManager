@@ -1,4 +1,4 @@
-package ru.testwork.UserManager.web;
+package ru.testwork.UserManager.util;
 
 
 import org.springframework.http.HttpStatus;

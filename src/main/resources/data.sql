@@ -1,12 +1,12 @@
 INSERT INTO users (name, login, password)
-VALUES ('Petr', 'Ivanov', 'pass'),
-       ('Sergey', 'Kolosov', 'pass'),
-       ('Andrew', 'Petrov', 'pass');
+VALUES ('Petr', 'Ivanov', 'Pass123'),
+       ('Sergey', 'Kolosov', 'Pass123'),
+       ('Andrew', 'Petrov', 'Pass123');
 
 INSERT INTO roles (role)
-VALUES ('Админ'),
-       ('Аналитик'),
-       ('Оператор');
+VALUES ('Admin'),
+       ('Analyst'),
+       ('Operator');
 
 INSERT INTO user_roles (login, role_id)
 VALUES ('Ivanov', 1),

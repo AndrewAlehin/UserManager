@@ -11,7 +11,7 @@ import ru.testwork.UserManager.model.User;
 
 @Component
 @Transactional(readOnly = true)
-public interface CrudUserRepository extends JpaRepository<User, Integer> {
+public interface CrudUserRepository extends JpaRepository<User, String> {
 
   @Transactional
   @Modifying

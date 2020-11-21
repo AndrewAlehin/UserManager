@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.testwork.UserManager.util.DoubleException;
+import ru.testwork.UserManager.util.NotFoundException;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class ExceptionInfoHandler {
@@ -21,7 +23,10 @@ public class ExceptionInfoHandler {
       String errorMessage = error.getDefaultMessage();
       errors.put(fieldName, errorMessage);
     });
-    return errors;
+    JSONObject entity = new JSONObject();
+    entity.put("success", "false");
+    entity.put("errors", errors);
+    return entity;
   }
 
   @ResponseStatus(HttpStatus.CONFLICT)

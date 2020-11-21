@@ -7,8 +7,8 @@ CREATE SEQUENCE global_seq;
 
 CREATE TABLE users
 (
-    name     VARCHAR             NOT NULL,
     login    VARCHAR PRIMARY KEY NOT NULL,
+    name     VARCHAR             NOT NULL,
     password VARCHAR             NOT NULL
 );
 CREATE UNIQUE INDEX users_unique_login_idx ON users (login);

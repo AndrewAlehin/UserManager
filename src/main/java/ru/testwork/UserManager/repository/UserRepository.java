@@ -20,13 +20,7 @@ public class UserRepository {
 
   public User add(User user) {
     Set<Role> roles = user.getRoles();
-    if (roles != null) {
-      for (Role role : roles) {
-        if (roleRepository.getByName(role.getName()) == null) {
-          roleRepository.save(role);
-        }
-      }
-    }
+    addRoles(roles);
     return userRepository.save(user);
   }
 
@@ -35,7 +29,9 @@ public class UserRepository {
     userUpdate.setName(user.getName());
     userUpdate.setLogin(user.getLogin());
     userUpdate.setPassword(user.getPassword());
-//        userUpdate.setRoles(user.getRoles());
+    Set<Role> roles = user.getRoles();
+    addRoles(roles);
+    userUpdate.setRoles(roles);
     return userRepository.save(userUpdate);
   }
 
@@ -49,5 +45,15 @@ public class UserRepository {
 
   public List<User> getAll() {
     return userRepository.findAll();
+  }
+
+  private void addRoles(Set<Role> roles) {
+    if (roles != null) {
+      for (Role role : roles) {
+        if (roleRepository.getByName(role.getName()) == null) {
+          roleRepository.save(role);
+        }
+      }
+    }
   }
 }

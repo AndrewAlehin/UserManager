@@ -1,5 +1,6 @@
 package ru.testwork.UserManager.web;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import java.util.List;
 import javax.validation.Valid;
 import net.minidev.json.JSONObject;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.testwork.UserManager.View;
 import ru.testwork.UserManager.model.User;
 import ru.testwork.UserManager.repository.UserRepository;
+import ru.testwork.UserManager.util.DoubleException;
+import ru.testwork.UserManager.util.NotFoundException;
 
 @RestController
 @RequestMapping(value = UserRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -32,52 +36,20 @@ public class UserRestController {
   @DeleteMapping("/{login}")
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
   public void delete(@PathVariable String login) {
-    checkNotFoundWithId(repository.delete(login), login);
+    if (!repository.delete(login)) {
+      throw new NotFoundException("login = " + login);
+    }
   }
 
   @GetMapping("/")
+  @JsonView(View.GetAll.class)
   public List<User> getAll() {
     return repository.getAll();
   }
 
   @GetMapping("/{login}")
+  @JsonView(View.Get.class)
   public User get(@PathVariable String login) {
-    return checkExistLogin(login);
-  }
-
-  @PutMapping(value = "/{login}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  @ResponseStatus(value = HttpStatus.OK)
-  public JSONObject update(@RequestBody @Valid User user, @PathVariable String login) {
-    checkLogin(user.getLogin(), login);
-    repository.update(user, login);
-    return null;
-  }
-
-  @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-  @ResponseStatus(value = HttpStatus.OK)
-  public JSONObject add(@RequestBody @Valid User user) {
-    checkNew(user);
-    repository.add(user);
-    return null;
-  }
-
-  private void checkNew(User user) {
-    if (repository.get(user.getLogin()) != null) {
-      throw new DoubleException("Already exists with this login");
-    }
-  }
-
-  private void checkLogin(String loginNew, String login) {
-    User user = repository.get(login); //test exception null?
-    if (user == null) {
-      throw new NotFoundException("login = " + login);
-    }
-    if (!user.getLogin().equals(loginNew) && repository.get(loginNew) != null) {
-      throw new DoubleException("Already exists with this login");
-    }
-  }
-
-  private User checkExistLogin(String login) {
     User user = repository.get(login);
     if (user == null) {
       throw new NotFoundException("login = " + login);
@@ -85,9 +57,34 @@ public class UserRestController {
     return user;
   }
 
-  private void checkNotFoundWithId(boolean found, String login) {
-    if (!found) {
+  @PutMapping(value = "/{login}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(value = HttpStatus.OK)
+  public JSONObject update(@Valid @RequestBody User user, @PathVariable String login) {
+    User checkUser = repository.get(login);
+    if (checkUser == null) {
       throw new NotFoundException("login = " + login);
     }
+    String checkLogin = checkUser.getLogin();
+    if (!user.getLogin().equals(checkLogin) && repository.get(checkLogin) != null) {
+      throw new DoubleException("Already exists with this login");
+    }
+    repository.update(user, login);
+    return goodRequest();
+  }
+
+  @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(value = HttpStatus.OK)
+  public JSONObject add(@Valid @RequestBody User user) {
+    if (repository.get(user.getLogin()) != null) {
+      throw new DoubleException("Already exists with this login");
+    }
+    repository.add(user);
+    return goodRequest();
+  }
+
+  private JSONObject goodRequest() {
+    JSONObject entity = new JSONObject();
+    entity.put("success", "true");
+    return entity;
   }
 }
