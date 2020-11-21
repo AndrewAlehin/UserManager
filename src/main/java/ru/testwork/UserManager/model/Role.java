@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import net.minidev.json.annotate.JsonIgnore;
 import ru.testwork.UserManager.View;
 
 @Entity
@@ -26,6 +27,7 @@ public class Role {
   private Integer id;
 
   @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
+  @JsonIgnore
   private Set<User> users;
 
   @Column(name = "role")

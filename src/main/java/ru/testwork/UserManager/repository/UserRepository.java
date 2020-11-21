@@ -1,26 +1,19 @@
 package ru.testwork.UserManager.repository;
 
 import java.util.List;
-import java.util.Set;
 import org.springframework.stereotype.Repository;
-import ru.testwork.UserManager.model.Role;
 import ru.testwork.UserManager.model.User;
 
 @Repository
 public class UserRepository {
 
   private final CrudUserRepository userRepository;
-  private final CrudRoleRepository roleRepository;
 
-  public UserRepository(CrudUserRepository crudRepository,
-      CrudRoleRepository roleRepository) {
+  public UserRepository(CrudUserRepository crudRepository) {
     this.userRepository = crudRepository;
-    this.roleRepository = roleRepository;
   }
 
   public User add(User user) {
-    Set<Role> roles = user.getRoles();
-    addRoles(roles);
     return userRepository.save(user);
   }
 
@@ -29,9 +22,7 @@ public class UserRepository {
     userUpdate.setName(user.getName());
     userUpdate.setLogin(user.getLogin());
     userUpdate.setPassword(user.getPassword());
-    Set<Role> roles = user.getRoles();
-    addRoles(roles);
-    userUpdate.setRoles(roles);
+    userUpdate.setRoles(user.getRoles());
     return userRepository.save(userUpdate);
   }
 
@@ -45,15 +36,5 @@ public class UserRepository {
 
   public List<User> getAll() {
     return userRepository.findAll();
-  }
-
-  private void addRoles(Set<Role> roles) {
-    if (roles != null) {
-      for (Role role : roles) {
-        if (roleRepository.getByName(role.getName()) == null) {
-          roleRepository.save(role);
-        }
-      }
-    }
   }
 }

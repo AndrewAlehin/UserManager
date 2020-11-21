@@ -48,7 +48,6 @@ public class UserRestController {
   }
 
   @GetMapping("/{login}")
-  @JsonView(View.Get.class)
   public User get(@PathVariable String login) {
     User user = repository.get(login);
     if (user == null) {

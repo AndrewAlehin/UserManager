@@ -23,26 +23,25 @@ public class User {
 
   @Column(name = "name")
   @NotBlank(message = "Name may not be null")
-  @JsonView({View.Get.class, View.GetAll.class})
+  @JsonView(View.GetAll.class)
   private String name;
 
   @Id
   @Basic(optional = false)
   @Column(name = "login", unique = true)
   @NotBlank(message = "Login may not be null")
-  @JsonView({View.Get.class, View.GetAll.class})
+  @JsonView(View.GetAll.class)
   private String login;
 
   @Column(name = "password")
   @NotBlank(message = "Password may not be null")
   @ValidPassword
-  @JsonView({View.Get.class, View.GetAll.class})
+  @JsonView(View.GetAll.class)
   private String password;
 
   @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "login"),
       inverseJoinColumns = @JoinColumn(name = "role_id"))
-  @JsonView(View.Get.class)
   private Set<Role> roles;
 
   public User(String name, String login, String password, Set<Role> roles) {
@@ -112,6 +111,7 @@ public class User {
         "name='" + name + '\'' +
         ", login='" + login + '\'' +
         ", password='" + password + '\'' +
+        ", roles=" + roles +
         '}';
   }
 }

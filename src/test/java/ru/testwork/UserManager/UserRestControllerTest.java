@@ -107,9 +107,7 @@ public class UserRestControllerTest {
     this.mockMvc.perform(post(REST_URL)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(user)))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string(containsString("{\"success\":\"false\",\"errors\":"
-            + "{\"password\":\"Password may not be null\"}}")));
+        .andExpect(status().isBadRequest());
   }
 
   @Test
